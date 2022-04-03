@@ -41,13 +41,12 @@ public class WeatherBot extends TelegramLongPollingBot  {
                     PreparedStatement statement = dao.getConnection().prepareStatement("SELECT flag FROM users WHERE chatid = ?");
                     statement.setInt(1, update.getMessage().getChatId().intValue());
                     ResultSet res = statement.executeQuery();
+                    res.next();
                     int flag = res.getInt(1);
-                    if (flag == 1){
+                    if (flag == 1)
                         findCity(update, flag);
-                    }
-                    if (flag == 2) {
-
-                    }
+                    if (flag == 2)
+                        subscribe(update, flag);
                 }
             }
             if (update.hasCallbackQuery()){
@@ -124,7 +123,7 @@ public class WeatherBot extends TelegramLongPollingBot  {
         editText.setReplyMarkup(markupInline);
         execute(editText);
     }
-    public void menu(Update update) throws TelegramApiException{
+    public void menu(Update update) throws TelegramApiException, SQLException {
         EditMessageText editText = new EditMessageText();
         editText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
         editText.setChatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()));
@@ -151,6 +150,9 @@ public class WeatherBot extends TelegramLongPollingBot  {
         markupInline.setKeyboard(add);
         editText.setReplyMarkup(markupInline);
         editText.setText("\uD83C\uDF2C️");
+        PreparedStatement statement = dao.getConnection().prepareStatement("UPDATE users SET flag = 0 WHERE chatid = ?");
+        statement.setInt(1, update.getCallbackQuery().getMessage().getChatId().intValue());
+        statement.execute();
         execute(editText);
     }
     public void menuInline(Update update) throws TelegramApiException{
@@ -224,6 +226,11 @@ public class WeatherBot extends TelegramLongPollingBot  {
     }
     public void subscribe(Update update) throws TelegramApiException{
 
+    }
+    public void subscribe(Update update, int flag) throws TelegramApiException, SQLException {
+        PreparedStatement statement = dao.getConnection().prepareStatement("UPDATE users SET flag = 0 WHERE chatid = ?");
+        statement.setInt(1, update.getCallbackQuery().getMessage().getChatId().intValue());
+        statement.execute();
     }
     public void yourSubs(Update update) throws TelegramApiException{
 
