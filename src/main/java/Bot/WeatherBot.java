@@ -1,5 +1,6 @@
 package Bot;
 
+import org.json.JSONObject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -8,6 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +19,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class WeatherBot extends TelegramLongPollingBot  {
 
@@ -42,7 +47,7 @@ public class WeatherBot extends TelegramLongPollingBot  {
                     statement.setInt(1, update.getMessage().getChatId().intValue());
                     ResultSet res = statement.executeQuery();
                     res.next();
-                    int flag = res.getInt(1);
+                    int flag = res.getInt("flag");
                     if (flag == 1)
                         findCity(update, flag);
                     if (flag == 2)
@@ -61,7 +66,7 @@ public class WeatherBot extends TelegramLongPollingBot  {
                 if(update.getCallbackQuery().getData().equals("MySubs"))
                     yourSubs(update);
             }
-        } catch (TelegramApiException | SQLException e) {
+        } catch (TelegramApiException | SQLException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -82,7 +87,7 @@ public class WeatherBot extends TelegramLongPollingBot  {
         statement.execute();
     }
 
-    public void start(Update update) throws TelegramApiException {
+    public void start(Update update) throws TelegramApiException, SQLException {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         SendMessage outMessage = new SendMessage();
         outMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
@@ -100,6 +105,14 @@ public class WeatherBot extends TelegramLongPollingBot  {
         add.add(addLine);
         markupInline.setKeyboard(add);
         outMessage.setReplyMarkup(markupInline);
+        PreparedStatement statement = dao.getConnection().prepareStatement("SELECT flag FROM users WHERE chatid = ?");
+        statement.setInt(1, update.getMessage().getChatId().intValue());
+        ResultSet res = statement.executeQuery();
+        if(!res.next()) {
+            statement = dao.getConnection().prepareStatement("INSERT INTO users (chatid) VALUE (?)");
+            statement.setInt(1, update.getMessage().getChatId().intValue());
+            statement.execute();
+        }
         execute(outMessage);
     }
     public void help(Update update) throws TelegramApiException{
@@ -129,13 +142,9 @@ public class WeatherBot extends TelegramLongPollingBot  {
         editText.setChatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()));
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> add = new ArrayList<>();
-        List<InlineKeyboardButton> addLine = new ArrayList<>();
-        InlineKeyboardButton button2 = new InlineKeyboardButton();
         InlineKeyboardButton button3 = new InlineKeyboardButton();
         InlineKeyboardButton button4 = new InlineKeyboardButton();
         InlineKeyboardButton button5 = new InlineKeyboardButton();
-        button2.setText("Menu \uD83D\uDCDD");
-        button2.setCallbackData("Menu");
         button3.setText("Find city \uD83C\uDFD9");
         button3.setCallbackData("FindCity");
         button4.setText("Subscribe ✔");
@@ -145,26 +154,20 @@ public class WeatherBot extends TelegramLongPollingBot  {
         add.add(Arrays.asList(button3));
         add.add(Arrays.asList(button4));
         add.add(Arrays.asList(button5));
-        addLine.add(button2);
-        add.add(addLine);
         markupInline.setKeyboard(add);
         editText.setReplyMarkup(markupInline);
-        editText.setText("\uD83C\uDF2C️");
+        editText.setText("\uD83C\uDF2C️  Main menu   \uD83C\uDF2C");
         PreparedStatement statement = dao.getConnection().prepareStatement("UPDATE users SET flag = 0 WHERE chatid = ?");
         statement.setInt(1, update.getCallbackQuery().getMessage().getChatId().intValue());
         statement.execute();
         execute(editText);
     }
-    public void menuInline(Update update) throws TelegramApiException{
+    public void menuInline(Update update) throws TelegramApiException, SQLException {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> add = new ArrayList<>();
-        List<InlineKeyboardButton> addLine = new ArrayList<>();
-        InlineKeyboardButton button2 = new InlineKeyboardButton();
         InlineKeyboardButton button3 = new InlineKeyboardButton();
         InlineKeyboardButton button4 = new InlineKeyboardButton();
         InlineKeyboardButton button5 = new InlineKeyboardButton();
-        button2.setText("Menu \uD83D\uDCDD");
-        button2.setCallbackData("Menu");
         button3.setText("Find city \uD83C\uDFD9");
         button3.setCallbackData("FindCity");
         button4.setText("Subscribe ✔");
@@ -174,13 +177,14 @@ public class WeatherBot extends TelegramLongPollingBot  {
         add.add(Arrays.asList(button3));
         add.add(Arrays.asList(button4));
         add.add(Arrays.asList(button5));
-        addLine.add(button2);
-        add.add(addLine);
         markupInline.setKeyboard(add);
         SendMessage outMessage = new SendMessage();
         outMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
         outMessage.setReplyMarkup(markupInline);
-        outMessage.setText(" \uD83C\uDF2C️");
+        outMessage.setText("\uD83C\uDF2C    Main menu   \uD83C\uDF2C");
+        PreparedStatement statement = dao.getConnection().prepareStatement("UPDATE users SET flag = 0 WHERE chatid = ?");
+        statement.setInt(1, update.getMessage().getChatId().intValue());
+        statement.execute();
         execute(outMessage);
     }
     public void findCity(Update update) throws TelegramApiException, SQLException {
@@ -203,22 +207,66 @@ public class WeatherBot extends TelegramLongPollingBot  {
         statement.execute();
         execute(editText);
     }
-    public void findCity(Update update, int flag) throws TelegramApiException, SQLException {
+    public void findCity(Update update, int flag) throws TelegramApiException, SQLException, IOException {
         String city = update.getMessage().getText();
-        //
-        //
-        //
-        if(true){
-            SendMessage outMessage = new SendMessage();
-            outMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
-            outMessage.setText(city + " \uD83C\uDF2C️");
-            execute(outMessage);
+        boolean fl = true;
+        JSONObject object = null;
+        URL url = new URL("http://api.openweathermap.org/geo/1.0/direct?q=" + city + "&appid=c712fdd570b5fe58adcaec207334729e");
+        Scanner in = new Scanner((InputStream) url.getContent());
+        String result="";
+        while (in.hasNext()) {
+            result += in.nextLine();
+        }
+        if(result.equals("[]")){
+            fl = false;
+        }
+        else {
+            object = new JSONObject(result.substring(1, result.length() - 1));
+            url = new URL("https://api.openweathermap.org/data/2.5/weather?lat=" + object.getDouble("lat") + "&lon=" + object.getDouble("lon") + "&appid=c712fdd570b5fe58adcaec207334729e");
+            in = new Scanner((InputStream) url.getContent());
+            result = "";
+            while (in.hasNext()) {
+                result += in.nextLine();
+            }
+            object = new JSONObject(result);
+        }
+        if(fl){
+            EditMessageText editText = new EditMessageText();
+            InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+            editText.setMessageId(update.getMessage().getMessageId());
+            editText.setChatId(String.valueOf(update.getMessage().getChatId()));
+            double temp = object.getJSONObject("main").getDouble("temp") - 273.15;
+            double real = object.getJSONObject("main").getDouble("feels_like") - 273.15;
+            editText.setText("\uD83C\uDFD9 City: " + city + "\n" +
+                    "\uD83C\uDF21 Temperature: " + temp + " °С\n" +
+                    "\uD83D\uDCAF Real feel: " + real + " °С\n" +
+                    "\uD83D\uDD28 Pressure: " + object.getJSONObject("main").getInt("pressure" ) + " mm. hg.\n" +
+                    "\uD83D\uDCA7 Humidity: " + object.getJSONObject("main").getInt("humidity")+ " %\n" +
+                    "\uD83E\uDD13 Description: " + object.getJSONArray("weather").getJSONObject(0).getString("main") + ", " + object.getJSONArray("weather").getJSONObject(0).getString("description")
+                    );
+            List<List<InlineKeyboardButton>> add = new ArrayList<>();
+            InlineKeyboardButton button2 = new InlineKeyboardButton();
+            button2.setText("Menu \uD83D\uDCDD");
+            button2.setCallbackData("Menu");
+            add.add(Arrays.asList(button2));
+            markupInline.setKeyboard(add);
+            editText.setReplyMarkup(markupInline);
+            execute(editText);
         }
         else{
-            SendMessage outMessage = new SendMessage();
-            outMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
-            outMessage.setText("Sorry didn't find nothing about " + city +"\uD83D\uDE1E");
-            execute(outMessage);
+            EditMessageText editText = new EditMessageText();
+            InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+            editText.setMessageId(update.getMessage().getMessageId());
+            editText.setChatId(String.valueOf(update.getMessage().getChatId()));
+            editText.setText("Sorry didn't find nothing about " + city +"\uD83D\uDE1E");
+            List<List<InlineKeyboardButton>> add = new ArrayList<>();
+            InlineKeyboardButton button2 = new InlineKeyboardButton();
+            button2.setText("Menu \uD83D\uDCDD");
+            button2.setCallbackData("Menu");
+            add.add(Arrays.asList(button2));
+            markupInline.setKeyboard(add);
+            editText.setReplyMarkup(markupInline);
+            execute(editText);
         }
         PreparedStatement statement = dao.getConnection().prepareStatement("UPDATE users SET flag = 0 WHERE chatid = ?");
         statement.setInt(1, update.getCallbackQuery().getMessage().getChatId().intValue());
