@@ -1,6 +1,7 @@
 package Bot.Messages;
 
 import Bot.Database.Dao;
+import org.json.JSONObject;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -55,7 +56,8 @@ public class Subscribe {
                 if(!result.equals("[]")) {
                     String[] tm = sub[1].split(":");
                     int minuts = Integer.parseInt(tm[0])*60+Integer.parseInt(tm[1]);
-                    String city = sub[0];
+                    JSONObject object = new JSONObject(result.substring(1, result.length() - 1));
+                    String city = object.getString("name");
                     PreparedStatement statement = dao.getConnection().prepareStatement("SELECT idsubs FROM subs WHERE time = ? AND city = ?");
                     statement.setInt(1, minuts);
                     statement.setString(2, city);
@@ -84,7 +86,7 @@ public class Subscribe {
                         List<List<InlineKeyboardButton>> add = new ArrayList<>();
                         InlineKeyboardButton button2 = new InlineKeyboardButton();
                         button2.setText("Menu \uD83D\uDCDD");
-                        button2.setCallbackData("/menu");
+                        button2.setCallbackData("Menu");
                         add.add(Arrays.asList(button2));
                         markupInline.setKeyboard(add);
                         editText.setReplyMarkup(markupInline);
@@ -101,7 +103,7 @@ public class Subscribe {
                         List<List<InlineKeyboardButton>> add = new ArrayList<>();
                         InlineKeyboardButton button2 = new InlineKeyboardButton();
                         button2.setText("Menu \uD83D\uDCDD");
-                        button2.setCallbackData("/menu");
+                        button2.setCallbackData("Menu");
                         add.add(Arrays.asList(button2));
                         markupInline.setKeyboard(add);
                         editText.setReplyMarkup(markupInline);
@@ -119,7 +121,7 @@ public class Subscribe {
                     List<List<InlineKeyboardButton>> add = new ArrayList<>();
                     InlineKeyboardButton button2 = new InlineKeyboardButton();
                     button2.setText("Menu \uD83D\uDCDD");
-                    button2.setCallbackData("/menu");
+                    button2.setCallbackData("Menu");
                     add.add(Arrays.asList(button2));
                     markupInline.setKeyboard(add);
                     editText.setReplyMarkup(markupInline);
@@ -134,7 +136,7 @@ public class Subscribe {
                 List<List<InlineKeyboardButton>> add = new ArrayList<>();
                 InlineKeyboardButton button2 = new InlineKeyboardButton();
                 button2.setText("Menu \uD83D\uDCDD");
-                button2.setCallbackData("/menu");
+                button2.setCallbackData("Menu");
                 add.add(Arrays.asList(button2));
                 markupInline.setKeyboard(add);
                 editText.setReplyMarkup(markupInline);
@@ -149,7 +151,7 @@ public class Subscribe {
             List<List<InlineKeyboardButton>> add = new ArrayList<>();
             InlineKeyboardButton button2 = new InlineKeyboardButton();
             button2.setText("Menu \uD83D\uDCDD");
-            button2.setCallbackData("/menu");
+            button2.setCallbackData("Menu");
             add.add(Arrays.asList(button2));
             markupInline.setKeyboard(add);
             editText.setReplyMarkup(markupInline);

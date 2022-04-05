@@ -2,14 +2,22 @@ package Bot;
 
 import Bot.Database.Dao;
 import Bot.Messages.*;
+import Bot.Weather.Weather;
+import org.json.JSONObject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class WeatherBot extends TelegramLongPollingBot  {
 
@@ -65,8 +73,45 @@ public class WeatherBot extends TelegramLongPollingBot  {
         if (flag == 2)
             execute(Subscribe.subscribe(update, flag, dao));
     };
-    public void subWeather(){
-
+    public void subWeather() throws InterruptedException, SQLException, IOException, TelegramApiException {
+        while(true){
+            Calendar current = new GregorianCalendar();
+            int minuts = current.get(Calendar.HOUR_OF_DAY) * 60 + current.get(Calendar.MINUTE);
+            PreparedStatement statement = dao.getConnection().prepareStatement("SELECT userid, subid FROM user_subs WHERE subid IN (SELECT idsubs FROM subs WHERE time = ?)");
+            statement.setInt(1, minuts);
+            ResultSet res = statement.executeQuery();
+            while(res.next()){
+                int userid = res.getInt("userid");
+                int subid = res.getInt("subid");
+                PreparedStatement userStatement = dao.getConnection().prepareStatement("SELECT chatid FROM users WHERE idusers = ?");
+                PreparedStatement subStatement = dao.getConnection().prepareStatement("SELECT city FROM subs WHERE idsubs  = ?");
+                userStatement.setInt(1, userid);
+                subStatement.setInt(1, subid);
+                ResultSet chat = userStatement.executeQuery();
+                ResultSet city = subStatement.executeQuery();
+                chat.next();
+                city.next();
+                URL url = new URL("http://api.openweathermap.org/geo/1.0/direct?q=" + city.getString("city") + "&appid=c712fdd570b5fe58adcaec207334729e");
+                Scanner in = new Scanner((InputStream) url.getContent());
+                String result="";
+                while (in.hasNext()) {
+                    result += in.nextLine();
+                }
+                JSONObject object = new JSONObject(result.substring(1, result.length() - 1));
+                url = new URL("https://api.openweathermap.org/data/2.5/weather?lat=" + object.getDouble("lat") + "&lon=" + object.getDouble("lon") + "&appid=c712fdd570b5fe58adcaec207334729e");
+                in = new Scanner((InputStream) url.getContent());
+                result = "";
+                while (in.hasNext()) {
+                    result += in.nextLine();
+                }
+                object = new JSONObject(result);
+                SendMessage outMessage = new SendMessage();
+                outMessage.setChatId(String.valueOf(chat.getInt("chatid")));
+                outMessage.setText(Weather.createForecast(object));
+                execute(outMessage);
+            }
+            TimeUnit.MINUTES.sleep(1);
+        }
     }
     public void createConnection(){
         try {

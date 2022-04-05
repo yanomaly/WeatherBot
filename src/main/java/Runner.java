@@ -3,6 +3,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class Runner {
@@ -14,7 +15,7 @@ public class Runner {
             weatherBot.setFlag();
             botsApi.registerBot(weatherBot);
             weatherBot.subWeather();
-        } catch (TelegramApiException | SQLException e) {
+        } catch (TelegramApiException | SQLException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }

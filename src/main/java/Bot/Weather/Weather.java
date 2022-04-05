@@ -29,14 +29,14 @@ public class Weather {
             dir = "   \uD83D\uDD04 Direction: SE ↖";
         return
                 "\uD83C\uDFD9 City: " + object.getString("name") + ", " + object.getJSONObject("sys").getString("country") + "\n" +
-                "\uD83C\uDF21 Temperature: " + temp + " °С\n" +
-                "\uD83D\uDCAF Real feel: " + real + " °С\n" +
-                "\uD83C\uDF8F Wind: \n" +
-                "   \uD83C\uDFCE Speed: " + object.getJSONObject("wind").getDouble("speed") + " m/s\n" +
-                dir + "\n" +
-                "\uD83D\uDD28 Pressure: " + object.getJSONObject("main").getInt("pressure" ) + " mm. hg.\n" +
-                "\uD83D\uDCA7 Humidity: " + object.getJSONObject("main").getInt("humidity")+ " %\n" +
-                "\uD83E\uDD13 Description: " + object.getJSONArray("weather").getJSONObject(0).getString("main") + ", " + object.getJSONArray("weather").getJSONObject(0).getString("description");
+                        "\uD83C\uDF21 Temperature: " + temp + " °С\n" +
+                        "\uD83D\uDCAF Real feel: " + real + " °С\n" +
+                        "\uD83C\uDF8F Wind: \n" +
+                        "   \uD83C\uDFCE Speed: " + object.getJSONObject("wind").getDouble("speed") + " m/s\n" +
+                        dir + "\n" +
+                        "\uD83D\uDD28 Pressure: " + object.getJSONObject("main").getInt("pressure" ) + " mm. hg.\n" +
+                        "\uD83D\uDCA7 Humidity: " + object.getJSONObject("main").getInt("humidity")+ " %\n" +
+                        "\uD83E\uDD13 Description: " + object.getJSONArray("weather").getJSONObject(0).getString("main") + ", " + object.getJSONArray("weather").getJSONObject(0).getString("description");
     }
 
 }
