@@ -19,7 +19,7 @@ public class Help {
                 "To find forecast for your city go \"Menu \uD83D\uDCDD\" -> \"Find city \uD83C\uDFD9️\" \n\n" +
                 "To subscribe to forecast posting go \"Menu \uD83D\uDCDD\" -> \"Subscribe ✔\" \n\n" +
                 "To see your subscribes go \"Menu \uD83D\uDCDD\" -> \"My subscribes \uD83D\uDCF0\" \n\n" +
-                "To unsubscribe go \"Menu \uD83D\uDCDD\" -> \"Mu subscribes \uD83D\uDCF0\" -> {subscribe you want to unsubscribe} -> \"Del ⛔\" \n\n");
+                "To unsubscribe go \"Menu \uD83D\uDCDD\" -> \"My subscribes \uD83D\uDCF0\" -> {subscribe you want to unsubscribe} -> \"Del ⛔\" \n\n");
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> add = new ArrayList<>();
         List<InlineKeyboardButton> addLine = new ArrayList<>();

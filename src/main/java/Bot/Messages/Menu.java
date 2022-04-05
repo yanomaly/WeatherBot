@@ -24,6 +24,9 @@ public class Menu {
         InlineKeyboardButton button3 = new InlineKeyboardButton();
         InlineKeyboardButton button4 = new InlineKeyboardButton();
         InlineKeyboardButton button5 = new InlineKeyboardButton();
+        InlineKeyboardButton button1 = new InlineKeyboardButton();
+        button1.setText("Help \uD83E\uDD14");
+        button1.setCallbackData("Help");
         button3.setText("Find city \uD83C\uDFD9");
         button3.setCallbackData("FindCity");
         button4.setText("Subscribe ✔");
@@ -33,6 +36,7 @@ public class Menu {
         add.add(Arrays.asList(button3));
         add.add(Arrays.asList(button4));
         add.add(Arrays.asList(button5));
+        add.add(Arrays.asList(button1));
         markupInline.setKeyboard(add);
         editText.setReplyMarkup(markupInline);
         editText.setText("\uD83C\uDF2C️  Main menu   \uD83C\uDF2C");

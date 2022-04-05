@@ -68,7 +68,7 @@ public class Subscribe {
                         statement.execute();
                     }
                     statement = dao.getConnection().prepareStatement(
-                            "SELECT idusers_subs FROM user_subs WHERE " +
+                            "SELECT iduser_subs FROM user_subs WHERE " +
                                     "userid = (SELECT idusers FROM users WHERE chatid = ?) AND " +
                                     "subid = (SELECT idsubs FROM subs WHERE time = ? AND city = ?)");
                     statement.setInt(1, update.getMessage().getChatId().intValue());

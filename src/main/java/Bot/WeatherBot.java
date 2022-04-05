@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,11 +25,11 @@ public class WeatherBot extends TelegramLongPollingBot  {
 
     @Override
     public String getBotUsername() {
-        return "NULL";
+        return PrivateData.getName();
     }
     @Override
     public String getBotToken() {
-        return "NULL";
+        return PrivateData.getToken();
     }
 
     @Override
