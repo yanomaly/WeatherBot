@@ -10,7 +10,7 @@ public class Dao {
 
     public Dao() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/weatherbot", "root", "Nastya228Tibo");
+        connection = DriverManager.getConnection("NULL", "NULL", "NULL");
     }
 
     public Connection getConnection() {

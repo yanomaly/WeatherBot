@@ -36,7 +36,7 @@ public class Subscribe {
         add.add(addLine);
         markupInline.setKeyboard(add);
         editText.setReplyMarkup(markupInline);
-        editText.setText("Please, input information about subscription this way: \nCity - XX:XX ");
+        editText.setText("Please, input name of the city and time this way: \nCity - XX:XX \n(e.g. Minsk - 14:20)");
         PreparedStatement statement = dao.getConnection().prepareStatement("UPDATE users SET flag = 2 WHERE chatid = ?");
         statement.setInt(1, update.getCallbackQuery().getMessage().getChatId().intValue());
         statement.execute();

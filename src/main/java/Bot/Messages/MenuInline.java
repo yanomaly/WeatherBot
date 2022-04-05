@@ -25,7 +25,7 @@ public class MenuInline {
         button3.setCallbackData("FindCity");
         button4.setText("Subscribe ✔");
         button4.setCallbackData("Subscribe");
-        button5.setText("My subscribes \uD83D\uDCF0");
+        button5.setText("My subscriptions \uD83D\uDCF0");
         button5.setCallbackData("MySubs");
         add.add(Arrays.asList(button3));
         add.add(Arrays.asList(button4));

@@ -5,6 +5,7 @@ import Bot.Messages.*;
 import Bot.Weather.Weather;
 import org.json.JSONObject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -25,11 +26,11 @@ public class WeatherBot extends TelegramLongPollingBot  {
 
     @Override
     public String getBotUsername() {
-        return "vveather_4cast_bot";
+        return "NULL";
     }
     @Override
     public String getBotToken() {
-        return "5268084440:AAG4JrHF4hURqbWFRyuvngyqT_ysWqRFl-c";
+        return "NULL";
     }
 
     @Override
@@ -56,6 +57,11 @@ public class WeatherBot extends TelegramLongPollingBot  {
                     execute(Subscribe.subscribe(update, dao));
                 if(update.getCallbackQuery().getData().equals("MySubs"))
                     execute(YourSubscriptions.yourSubscriptions(update, dao));
+                if(update.getCallbackQuery().getData().startsWith("del")) {
+                    execute(YourSubscriptions.delete(update, dao));
+                    AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery(update.getCallbackQuery().getId(), "You successfully delete subscription", true, null, 2000);
+                    execute(answerCallbackQuery);
+                }
             }
         } catch (TelegramApiException | SQLException | IOException e) {
             e.printStackTrace();
