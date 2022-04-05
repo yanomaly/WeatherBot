@@ -1,4 +1,4 @@
-package Bot;
+package Bot.Database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,7 +8,7 @@ public class Dao {
 
     private Connection connection;
 
-    Dao() throws ClassNotFoundException, SQLException {
+    public Dao() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/weatherbot", "root", "Nastya228Tibo");
     }
